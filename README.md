@@ -13,8 +13,8 @@
 >講者發表為時60分鐘的演講，每5秒鐘講1句話，每句話包含10個字元。每月有4次演講。  
 按照上述情境，使用api的時間是240分鐘，共有28800字元。以下是各個方法的成本(每月)計算，結論來說：**方法1比較便宜**  
 ## 方法1：    
-&emsp;&emsp;google speech to text 共花費 (240-60)*60/15*0.006=**4.32美元** 
-&emsp;&emsp;google translate 免費（前 500,000 個字元 免費） 
+&emsp;&emsp;google speech to text 共花費 (240-60)*60/15*0.006=**4.32美元**   
+&emsp;&emsp;google translate **免費**（前 500,000 個字元 免費） 
 ## 方法2:
 &emsp;&emsp;google media translate 共花費 (240-60)*60/15*0.068=**48.96**   
 ## reference 
