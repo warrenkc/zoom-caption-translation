@@ -1,4 +1,4 @@
-# zoom-caption-translation
+# Zoom-caption-translation
 利用google 翻譯和提供zoom 視訊會議字幕
 # 想法：    
 ## 方法1：   
