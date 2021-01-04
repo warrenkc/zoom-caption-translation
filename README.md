@@ -2,7 +2,9 @@
 利用google 翻譯和提供zoom 視訊會議字幕
 # 想法：    
 ## 方法1：   
-首先，使用google speech to text api將audio stream輸入成文字。接著，將輸入好的文字送入 google translate api進行翻譯。翻譯完成後，把結果傳送到zoom。    
+&emsp;&emsp;首先，使用google speech to text api將audio stream輸入成文字。 
+接著，將輸入好的文字送入google translate api進行翻譯。  
+翻譯完成後，把結果傳送到zoom。    
 ## 方法2：
 直接使用google media translate api 將audio stream翻譯成文字。翻譯完成後，把結果傳送到zoom。    
 
@@ -11,14 +13,14 @@
 >講者發表為時60分鐘的演講，每5秒鐘講1句話，每句話包含10個字元。每月有4次演講。  
 按照上述情境，使用api的時間是240分鐘，共有28800字元。以下是各個方法的成本(每月)計算，結論來說：**方法1比較便宜**  
 ## 方法1：    
-google speech to text 共花費 (240-60)*60/15*0.006=4.32美元.   
-google translate 免費（前 500,000 個字元 免費） 
+&emsp;&emsp;google speech to text 共花費 (240-60)*60/15*0.006=**4.32美元** 
+&emsp;&emsp;google translate 免費（前 500,000 個字元 免費） 
 ## 方法2:
-google media translate 共花費 (240-60)*60/15*0.068=48.96   
+&emsp;&emsp;google media translate 共花費 (240-60)*60/15*0.068=**48.96**   
 ## reference 
-google speech to text pricing doc：https://cloud.google.com/speech-to-text/pricing#enhanced_models   
-google translate pricing doc：https://cloud.google.com/translate/pricing   
-google media translate pricing：https://cloud.google.com/translate/media/pricing?hl=zh-TW   
+&emsp;&emsp;google speech to text pricing doc：https://cloud.google.com/speech-to-text/pricing#enhanced_models   
+&emsp;&emsp;google translate pricing doc：https://cloud.google.com/translate/pricing   
+&emsp;&emsp;google media translate pricing：https://cloud.google.com/translate/media/pricing?hl=zh-TW   
 # 已知問題：
 ## zoom api問題：
 1. 在呼叫zoom caption api時，response 的時間太長，平均來說超過1.5秒 
