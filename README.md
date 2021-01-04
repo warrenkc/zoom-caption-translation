@@ -23,12 +23,12 @@
 &emsp;&emsp;google media translate pricing：https://cloud.google.com/translate/media/pricing?hl=zh-TW   
 # 已知問題：
 ## zoom api問題：
-&emsp;1. 在呼叫zoom caption api時，response 的時間太長，平均來說超過1.5秒 
-&emsp;2. zoom呼叫完成後，zoom caption 沒有馬上出現，有延遲的狀況（時間不一定，有時甚至好幾個caption同時出現） 
+&emsp;1. 在呼叫zoom caption api時，response 的時間太長，平均來說超過1.5秒.   
+&emsp;2. zoom呼叫完成後，zoom caption 沒有馬上出現，有延遲的狀況（時間不一定，有時甚至好幾個caption同時出現).   
 ## 方法1問題：
 1. 無法看到翻譯的過程，只有等待speech recognize 完成後，才傳送給google translate  
 
 ## 方法2問題：
-&emsp;1. google media translate 只有提供少數語言的翻譯（請詳見 language support https://cloud.google.com/translate/media/docs/languages?hl=zh-TW）
-&emsp;2. google media translate 屬於beta版本，物件有改變的可能
-&emsp;3. google media translate 無法提供原文的辨識結果
+&emsp;1. google media translate 只有提供少數語言的翻譯（請詳見 language support https://cloud.google.com/translate/media/docs/languages?hl=zh-TW.   
+&emsp;2. google media translate 屬於beta版本，物件有改變的可能.   
+&emsp;3. google media translate 無法提供原文的辨識結果.   
