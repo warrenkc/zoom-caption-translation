@@ -2,11 +2,10 @@
 利用google 翻譯和提供zoom 視訊會議字幕
 # 想法：    
 ## 方法1：   
-&emsp;&emsp;首先，使用google speech to text api將audio stream輸入成文字。 
-接著，將輸入好的文字送入google translate api進行翻譯。  
-翻譯完成後，把結果傳送到zoom。    
+&emsp;&emsp;首先，使用google speech to text api將audio streaming輸入成文字。 
+接著，將輸入好的文字送入google translate api進行翻譯。翻譯完成後，把結果傳送到zoom。    
 ## 方法2：
-&emsp;&emsp;直接使用google media translate api 將audio stream翻譯成文字。翻譯完成後，把結果傳送到zoom。    
+&emsp;&emsp;直接使用google media translate api 將audio streaming翻譯成文字。翻譯完成後，把結果傳送到zoom。    
 
 # API 成本：
 考慮費用時，我們考慮以下情境：    
