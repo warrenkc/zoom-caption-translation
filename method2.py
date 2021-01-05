@@ -22,6 +22,7 @@ Example usage:
 from __future__ import division
 import requests
 import time
+import sys
 import itertools
 import json
 from google.cloud import mediatranslation as media
@@ -108,7 +109,7 @@ class MicrophoneStream:
         headers={'Content-type': 'text/plain; charset=utf-8'}
         result=requests.post(self.token,params=post_params, data=text.encode('utf-8'),headers=headers)
         if result.status_code!=200:
-            print("傳送失敗！請檢查網路連線和憑證是否正確")
+            print("錯誤！傳送失敗！")
         self.seq_count=self.seq_count+1
 
 def listen_print_loop(responses,stream):
@@ -141,7 +142,7 @@ def listen_print_loop(responses,stream):
 
 def do_translation_loop(configs,token):
 
-    print('Begin speaking...')
+    
 
     client = media.SpeechTranslationServiceClient()
 
@@ -179,7 +180,8 @@ def do_translation_loop(configs,token):
 def main():
     with open ("config.json") as config_file:
         configs=json.load(config_file)
-    token=input("請輸入憑證：") 
+    token=input("請輸入zoom API憑證：") 
+    print('請開始說話（按下ctrl+c結束程式）：')
     while True:
     #     print()
     #     option = input('Press any key to translate or \'q\' to quit: ')
@@ -191,5 +193,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('---------------------結束程式---------------------')
+        sys.exit(0)
 # [END media_translation_translate_from_mic]
