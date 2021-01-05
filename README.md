@@ -33,3 +33,5 @@
 &emsp;1. google media translate 只有提供少數語言的翻譯（請詳見 language support https://cloud.google.com/translate/media/docs/languages?hl=zh-TW.   
 &emsp;2. google media translate 屬於beta版本，物件有改變的可能.   
 &emsp;3. google media translate 無法提供原文的辨識結果.   
+# 安裝： 
+請詳見安裝方法
