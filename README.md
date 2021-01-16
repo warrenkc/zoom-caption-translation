@@ -27,7 +27,7 @@
 ### zoom api問題（fixed)：
 &emsp;1. 在呼叫zoom caption api時，response 的時間太長，平均來說超過1.5秒.   
 &emsp;2. zoom呼叫完成後，zoom caption 沒有馬上出現，有延遲的狀況（時間不一定，有時甚至好幾個caption同時出現).   
-&emsp;**fixed:**採用session保持連線，延遲縮短到0.3左右
+&emsp;**fixed:** 採用session保持連線，延遲縮短到0.3左右
 ### 方法1問題：
 1. 無法看到翻譯的過程，只有等待speech recognize 完成後，才傳送給google translate  
 
