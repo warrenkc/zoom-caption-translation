@@ -30,7 +30,7 @@ class MicrophoneStream(object):
         self._chunk = chunk
         self.source = _configs["source_lang"]
         self.target = _configs["target_lang"]
-        self.seq_count=_configs["seq_count"]
+        self.seq_count=0
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
         self.closed = True
@@ -100,8 +100,6 @@ class MicrophoneStream(object):
 
 
 def listen_print_loop(responses,token,stream):
-    
-
     num_chars_printed = 0
     for response in responses:
         if not response.results:
@@ -111,7 +109,6 @@ def listen_print_loop(responses,token,stream):
         result = response.results[0]
         if not result.alternatives:
             continue
-
         # Display the transcription of the top alternative.
         transcript = result.alternatives[0].transcript
 
@@ -120,9 +117,7 @@ def listen_print_loop(responses,token,stream):
         if not result.is_final:
             sys.stdout.write("Speech:"+transcript + overwrite_chars + "\r")
             sys.stdout.flush()
-    
             num_chars_printed = len(transcript)
-
         else:
             print("Speech:",transcript + overwrite_chars)
             sentence=transcript + overwrite_chars
@@ -137,13 +132,9 @@ def listen_print_loop(responses,token,stream):
             if stream.seq_count == 0:
                 print("初次建立連線！")
                 session = requests.Session()
-                s=time.time()
-                result=session.post(token,params=post_params, data=sentence.encode('utf-8'),headers=headers)
-                print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}")
-            else:
-                s=time.time()
-                result=session.post(token,params=post_params, data=sentence.encode('utf-8'),headers=headers)
-                print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}")
+            s=time.time()
+            result=session.post(token,params=post_params, data=sentence.encode('utf-8'),headers=headers)
+            print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}")
             if result.status_code!=200:
                 print(">>錯誤！訊息為傳送出去！")
             stream.seq_count=stream.seq_count+1
