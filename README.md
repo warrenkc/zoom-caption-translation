@@ -24,9 +24,10 @@
 # 已知問題：
 ### 停頓問題：
 &emsp;&emsp;無論是speech to text 或是 media translate api都有一個名叫 single utterances的參數。如果參數為True，api會自動判斷說話者的語氣來決定停頓的時間。不過，目前我們還不知道，api到底以什麼標準來判斷停頓時機。經過(audio input)測試，當講者語速比較快時，api無法判斷停頓，就造成大量的文字無法傳送（停留在recongnize)
-### zoom api問題：
+### zoom api問題（fixed)：
 &emsp;1. 在呼叫zoom caption api時，response 的時間太長，平均來說超過1.5秒.   
 &emsp;2. zoom呼叫完成後，zoom caption 沒有馬上出現，有延遲的狀況（時間不一定，有時甚至好幾個caption同時出現).   
+&emsp;**fixed:**採用session保持連線，延遲縮短到0.3左右
 ### 方法1問題：
 1. 無法看到翻譯的過程，只有等待speech recognize 完成後，才傳送給google translate  
 
