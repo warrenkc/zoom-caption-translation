@@ -130,7 +130,6 @@ def listen_print_loop(responses,token,stream):
                 'lang':"en-US"}
             headers={'Content-type': 'text/plain; charset=utf-8'}
             if stream.seq_count == 0:
-                print("初次建立連線！")
                 session = requests.Session()
             s=time.time()
             result=session.post(token,params=post_params, data=sentence.encode('utf-8'),headers=headers)
