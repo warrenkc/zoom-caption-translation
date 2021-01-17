@@ -38,15 +38,15 @@ SpeechEventType = media.StreamingTranslateSpeechResponse.SpeechEventType
 class MicrophoneStream:
     """Opens a recording stream as a generator yielding the audio chunks."""
 
-    def __init__(self, rate, chunk,configs,token):
+    def __init__(self, rate, chunk,configs,token,seq_count,session):
         self._rate = rate
         self._chunk = chunk
         self.token=token
-        
+        self.seq_count=seq_count
+        self.session=session
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
         self.closed = True
-        self.seq_count=configs["seq_count"]
 
     def __enter__(self):
         self._audio_interface = pyaudio.PyAudio()
@@ -106,20 +106,15 @@ class MicrophoneStream:
         post_params={
                 'seq' : self.seq_count,
                 'lang':"en-US"}
-        headers={'Content-type': 'text/plain; charset=utf-8'}
-        result=requests.post(self.token,params=post_params, data=text.encode('utf-8'),headers=headers)
+        result=self.session.post(self.token,params=post_params, data=text.encode('utf-8'))
         if result.status_code!=200:
             print("錯誤！傳送失敗！")
-        self.seq_count=self.seq_count+1
+        
 
 def listen_print_loop(responses,stream):
-    """Iterates through server responses and prints them.
 
-    The responses passed is a generator that will block until a response
-    is provided by the server.
-    """
     translation = ''
-    # source = ''
+
     for response in responses:
         # Once the transcription settles, the response contains the
         # END_OF_SINGLE_UTTERANCE event.
@@ -127,25 +122,18 @@ def listen_print_loop(responses,stream):
                 SpeechEventType.END_OF_SINGLE_UTTERANCE) :
 
             stream.zoom_post(translation)
-            # print(u'\nzoom translation: {0}'.format(translation))
-            # print(u'recognition result: {0}'.format(source))
+            print("已傳送！")
             return 0
 
         result = response.result
         translation = result.text_translation_result.translation
-        # source = result.recognition_result
 
         print(u'\ntranslation: {0}'.format(translation))
         
-        # print(u'recognition result: {0}'.format(source))
 
-
-def do_translation_loop(configs,token):
-
-    
+def do_translation_loop(configs,token,seq_count,session):
 
     client = media.SpeechTranslationServiceClient()
-
     speech_config = media.TranslateSpeechConfig(
         audio_encoding='linear16',
         source_language_code=configs["source_lang"],
@@ -159,7 +147,7 @@ def do_translation_loop(configs,token):
     first_request = media.StreamingTranslateSpeechRequest(
         streaming_config=config, audio_content=None)
 
-    with MicrophoneStream(RATE, CHUNK,configs,token) as stream:
+    with MicrophoneStream(RATE, CHUNK,configs,token,seq_count,session) as stream:
         
         audio_generator = stream.generator()
         mic_requests = (media.StreamingTranslateSpeechRequest(
@@ -173,6 +161,7 @@ def do_translation_loop(configs,token):
 
         # Print the translation responses as they arrive
         result = listen_print_loop(responses,stream)
+        
         if result == 0:
             stream.exit()
 
@@ -182,16 +171,16 @@ def main():
         configs=json.load(config_file)
     token=input("請輸入zoom API憑證：") 
     print('請開始說話（按下ctrl+c結束程式）：')
+    seq_count=0
+    session= requests.Session()
+    post_params={
+                'seq' : seq_count,
+                'lang':"en-US"}
+    session.post(token,params=post_params, data="建立連線".encode('utf-8'))
+    seq_count+=1
     while True:
-    #     print()
-    #     option = input('Press any key to translate or \'q\' to quit: ')
-
-    #     if option.lower() == 'q':
-    #         break
-
-        do_translation_loop(configs,token)
-
-
+        do_translation_loop(configs,token,seq_count,session)
+        seq_count+=1
 if __name__ == '__main__':
     try:
         main()
