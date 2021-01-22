@@ -8,7 +8,10 @@ import sys
 import six
 import time
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
+=======
+>>>>>>> upstream/main
 =======
 >>>>>>> upstream/main
 import os
@@ -28,6 +31,11 @@ zoom_api_url=input("請輸入zoom API憑證 Enter the Zoom Captions URL:") #Opti
 source_lang=input("Enter source language such as en or zh:")
 target_lang=input("Enter the output translated language such as en or zh:")
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+# See http://g.co/cloud/speech/docs/languages
+# for a list of supported languages.
+>>>>>>> upstream/main
 =======
 # See http://g.co/cloud/speech/docs/languages
 # for a list of supported languages.
@@ -39,7 +47,11 @@ class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self, rate, chunk,_configs):        
+=======
+    def __init__(self, rate, chunk,seq_count):        
+>>>>>>> upstream/main
 =======
     def __init__(self, rate, chunk,seq_count):        
 >>>>>>> upstream/main
@@ -48,7 +60,11 @@ class MicrophoneStream(object):
         self.source = source_lang
         self.target = target_lang
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.seq_count=0
+=======
+        self.seq_count=seq_count
+>>>>>>> upstream/main
 =======
         self.seq_count=seq_count
 >>>>>>> upstream/main
@@ -121,7 +137,11 @@ class MicrophoneStream(object):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang):
+=======
+def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang,session):
+>>>>>>> upstream/main
 =======
 def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang,session):
 >>>>>>> upstream/main
@@ -149,6 +169,10 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang,sess
 
             sentence=sentence+"\n"+stream.zoomtranslate(sentence)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+            
+>>>>>>> upstream/main
 =======
             
 >>>>>>> upstream/main
@@ -159,8 +183,13 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang,sess
                     'lang':"en-US"}
                 headers={'Content-type': 'text/plain; charset=utf-8'}
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if stream.seq_count == 0:
                     session = requests.Session()
+=======
+                # if stream.seq_count == 0:
+                #     session = requests.Session()
+>>>>>>> upstream/main
 =======
                 # if stream.seq_count == 0:
                 #     session = requests.Session()
@@ -171,9 +200,14 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang,sess
                 if result.status_code!=200:
                     print(">>錯誤！訊息為傳送出去！Error sending message!") 
 <<<<<<< HEAD
+<<<<<<< HEAD
                 stream.seq_count=stream.seq_count+1
                 num_chars_printed = 0
 
+=======
+                num_chars_printed = 0
+                break
+>>>>>>> upstream/main
 =======
                 num_chars_printed = 0
                 break
@@ -203,6 +237,7 @@ def main():
     print("請開始說話.............. (結束請按下ctrl+c)： Please start talking, to stop the program press CTR+C")
     print()
 <<<<<<< HEAD
+<<<<<<< HEAD
     with MicrophoneStream(RATE, CHUNK,_configs) as stream:
         audio_generator = stream.generator()
         requests = (
@@ -216,6 +251,8 @@ def main():
         
         listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang)
 =======
+=======
+>>>>>>> upstream/main
     while True:
         with MicrophoneStream(RATE, CHUNK,seq_count) as stream:
             audio_generator = stream.generator()
@@ -223,6 +260,9 @@ def main():
                 speech.StreamingRecognizeRequest(audio_content=content)
                 for content in audio_generator
             )
+<<<<<<< HEAD
+>>>>>>> upstream/main
+=======
 >>>>>>> upstream/main
 
             responses = client.streaming_recognize(streaming_config, _requests)
