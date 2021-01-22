@@ -21,10 +21,11 @@ RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 # Get input from user:
 credentials_file_location = input("Enter the local path of your Google Cloud credentials json file:")
-zoom_api_url=input("請輸入zoom API憑證 Enter the Zoom Captions URL:")
+zoom_api_url=input("請輸入zoom API憑證 Enter the Zoom Captions URL:") #Optional. If not entered, it will not attempt to send the data.
 source_lang=input("Enter source language such as en or zh:")
 target_lang=input("Enter the output translated language such as en or zh:")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=credentials_file_location
+translate_client = translate.Client()
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -67,8 +68,7 @@ class MicrophoneStream(object):
         self._buff.put(None)
         self._audio_interface.terminate()
     
-    def zoomtranslate(self,text):        
-        translate_client = translate.Client()
+    def zoomtranslate(self,text):
         if isinstance(text, six.binary_type):
             text = text.decode("utf-8")
         result =translate_client.translate(text,source_language=source_lang,target_language=target_lang)
@@ -130,19 +130,21 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang):
             print("Translate:",stream.zoomtranslate(sentence),"\n")
 
             sentence=sentence+"\n"+stream.zoomtranslate(sentence)
-            post_params={
-                'seq' : stream.seq_count,
-                'lang':"en-US"}
-            headers={'Content-type': 'text/plain; charset=utf-8'}
-            if stream.seq_count == 0:
-                session = requests.Session()
-            s=time.time()
-            result=session.post(zoom_api_url,params=post_params, data=sentence.encode('utf-8'),headers=headers)
-            print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}") # Cost for the first transfer.
-            if result.status_code!=200:
-                print(">>錯誤！訊息為傳送出去！Error sending message!") 
-            stream.seq_count=stream.seq_count+1
-            num_chars_printed = 0
+            # Send text to Zoom API URL:
+            if zoom_api_url:
+                post_params={
+                    'seq' : stream.seq_count,
+                    'lang':"en-US"}
+                headers={'Content-type': 'text/plain; charset=utf-8'}
+                if stream.seq_count == 0:
+                    session = requests.Session()
+                s=time.time()
+                result=session.post(zoom_api_url,params=post_params, data=sentence.encode('utf-8'),headers=headers)
+                print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}") # Cost for the first transfer.
+                if result.status_code!=200:
+                    print(">>錯誤！訊息為傳送出去！Error sending message!") 
+                stream.seq_count=stream.seq_count+1
+                num_chars_printed = 0
 
 
 def main():    
