@@ -168,7 +168,7 @@ def main():
     )
 
     streaming_config = speech.StreamingRecognitionConfig(
-        config=config, interim_results=True
+        config=config, interim_results=True,single_utterance=True
     )
     print("請開始說話.............. (結束請按下ctrl+c)： Please start talking, to stop the program press CTR+C")
     print()
