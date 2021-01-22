@@ -8,6 +8,7 @@ import sys
 import six
 import time
 import json
+import os
 from google.cloud import translate_v2 as translate
 from google.cloud import speech_v1p1beta1 as speech
 
@@ -18,18 +19,22 @@ from six.moves import queue
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
+# Get input from user:
+credentials_file_location = input("Enter the local path of your Google Cloud credentials json file:")
+zoom_api_url=input("請輸入zoom API憑證 Enter the Zoom Captions URL:") #Optional. If not entered, it will not attempt to send the data.
+source_lang=input("Enter source language such as en or zh:")
+target_lang=input("Enter the output translated language such as en or zh:")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=credentials_file_location
 translate_client = translate.Client()
-
-
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
 
-    def __init__(self, rate, chunk,_configs):
+    def __init__(self, rate, chunk,_configs):        
         self._rate = rate
         self._chunk = chunk
-        self.source = _configs["source_lang"]
-        self.target = _configs["target_lang"]
+        self.source = source_lang
+        self.target = target_lang
         self.seq_count=0
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
@@ -66,7 +71,7 @@ class MicrophoneStream(object):
     def zoomtranslate(self,text):
         if isinstance(text, six.binary_type):
             text = text.decode("utf-8")
-        result =translate_client.translate(text,source_language=self.source,target_language=self.target)
+        result =translate_client.translate(text,source_language=source_lang,target_language=target_lang)
   
         return result["translatedText"]
 
@@ -99,13 +104,11 @@ class MicrophoneStream(object):
      
 
 
-def listen_print_loop(responses,token,stream):
+def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang):
     num_chars_printed = 0
     for response in responses:
         if not response.results:
             continue
-
-        
         result = response.results[0]
         if not result.alternatives:
             continue
@@ -115,7 +118,7 @@ def listen_print_loop(responses,token,stream):
         overwrite_chars = " " * (num_chars_printed - len(transcript))
 
         if not result.is_final:
-            sys.stdout.write("Speech:"+transcript + overwrite_chars + "\r")
+            sys.stdout.write("（還沒結束）Speech:"+transcript + overwrite_chars + "\r")
             sys.stdout.flush()
             num_chars_printed = len(transcript)
         else:
@@ -125,23 +128,25 @@ def listen_print_loop(responses,token,stream):
             print("Translate:",stream.zoomtranslate(sentence),"\n")
 
             sentence=sentence+"\n"+stream.zoomtranslate(sentence)
-            post_params={
-                'seq' : stream.seq_count,
-                'lang':"en-US"}
-            headers={'Content-type': 'text/plain; charset=utf-8'}
-            if stream.seq_count == 0:
-                session = requests.Session()
-            s=time.time()
-            result=session.post(token,params=post_params, data=sentence.encode('utf-8'),headers=headers)
-            print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}")
-            if result.status_code!=200:
-                print(">>錯誤！訊息為傳送出去！")
-            stream.seq_count=stream.seq_count+1
-            num_chars_printed = 0
+            break
+            # Send text to Zoom API URL:
+            if zoom_api_url:
+                post_params={
+                    'seq' : stream.seq_count,
+                    'lang':"en-US"}
+                headers={'Content-type': 'text/plain; charset=utf-8'}
+                if stream.seq_count == 0:
+                    session = requests.Session()
+                s=time.time()
+                result=session.post(zoom_api_url,params=post_params, data=sentence.encode('utf-8'),headers=headers)
+                print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}") # Cost for the first transfer.
+                if result.status_code!=200:
+                    print(">>錯誤！訊息為傳送出去！Error sending message!") 
+                stream.seq_count=stream.seq_count+1
+                num_chars_printed = 0
 
 
-def main():
-    token=input("請輸入zoom API憑證：")
+def main():    
     print()
     with open('config.json') as config:
         _configs = json.load(config)
@@ -149,7 +154,7 @@ def main():
     # for a list of supported languages.
 
     # 請在這裡放入常用語詞進行判斷
-    phrases = ["中央長老團","會眾","分區監督","分部委員會"] 
+    phrases = ["中央長老團","會眾","分區監督","分部委員會"] #governing body, congregation, circuit overseer, branch committee
     boost = 20.0
     speech_contexts_element = {"phrases": phrases, "boost": boost}
     speech_contexts = [speech_contexts_element]
@@ -158,33 +163,34 @@ def main():
         speech_contexts=speech_contexts,
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
         sample_rate_hertz=RATE,
-        language_code=_configs["source_lang"],
+        language_code=source_lang,
         enable_automatic_punctuation=True
     )
 
     streaming_config = speech.StreamingRecognitionConfig(
         config=config, interim_results=True
     )
-    print("請開始說話.............. (結束請按下ctrl+c)：")
+    print("請開始說話.............. (結束請按下ctrl+c)： Please start talking, to stop the program press CTR+C")
     print()
-    with MicrophoneStream(RATE, CHUNK,_configs) as stream:
-        audio_generator = stream.generator()
-        requests = (
-            speech.StreamingRecognizeRequest(audio_content=content)
-            for content in audio_generator
-        )
+    while True:
+        with MicrophoneStream(RATE, CHUNK,_configs) as stream:
+            audio_generator = stream.generator()
+            requests = (
+                speech.StreamingRecognizeRequest(audio_content=content)
+                for content in audio_generator
+            )
 
-        responses = client.streaming_recognize(streaming_config, requests)
+            responses = client.streaming_recognize(streaming_config, requests)
 
-        # Now, put the transcription responses to use.
-        
-        listen_print_loop(responses,token,stream)
-
+            # Now, put the transcription responses to use.
+            
+            listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang)
+            print("結束")
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print('---------------------結束程式---------------------')
+        print('---------------------結束程式-EXIT------------------')
         sys.exit(0)
 # [END speech_transcribe_streaming_mic]
