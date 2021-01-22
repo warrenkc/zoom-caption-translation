@@ -143,7 +143,6 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang,sess
                 print(f"第{stream.seq_count}次傳送花費：{time.time()-s:.2f}") # Cost for the first transfer.
                 if result.status_code!=200:
                     print(">>錯誤！訊息為傳送出去！Error sending message!") 
-                stream.seq_count=stream.seq_count+1
                 num_chars_printed = 0
                 break
 
