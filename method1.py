@@ -7,7 +7,6 @@ import re
 import sys
 import six
 import time
-import json
 import os
 from google.cloud import translate_v2 as translate
 from google.cloud import speech_v1p1beta1 as speech
