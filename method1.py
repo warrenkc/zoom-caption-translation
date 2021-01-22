@@ -128,7 +128,7 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang):
             print("Translate:",stream.zoomtranslate(sentence),"\n")
 
             sentence=sentence+"\n"+stream.zoomtranslate(sentence)
-            break
+            
             # Send text to Zoom API URL:
             if zoom_api_url:
                 post_params={
@@ -144,7 +144,7 @@ def listen_print_loop(responses,zoom_api_url,stream,source_lang,target_lang):
                     print(">>錯誤！訊息為傳送出去！Error sending message!") 
                 stream.seq_count=stream.seq_count+1
                 num_chars_printed = 0
-
+                break
 
 def main():    
     print()
